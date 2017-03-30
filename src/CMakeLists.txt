@@ -2,11 +2,14 @@
 # CMake Includes
 # ------------------------------------------------------------------------------
 
-if(NOT CMAKE_TOOLCHAIN_FILE)
-    include("${CMAKE_INSTALL_PREFIX}/cmake/CMakeFlags_Native.txt")
-endif()
-
 include("${CMAKE_INSTALL_PREFIX}/cmake/CMakeGlobal_Includes.txt")
+
+# ------------------------------------------------------------------------------
+# Exports
+# ------------------------------------------------------------------------------
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCOMPILING_UNWIND")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCOMPILING_UNWIND")
 
 # ------------------------------------------------------------------------------
 # Custom Flags
@@ -28,8 +31,9 @@ list(APPEND SOURCES
     registers_intel_x64.asm
 )
 
-add_library(bfunwind SHARED ${SOURCES})
-add_library(bfunwind_static STATIC ${SOURCES})
+add_library(unwind OBJECT ${SOURCES})
+add_library(bfunwind SHARED $<TARGET_OBJECTS:unwind>)
+add_library(bfunwind_static STATIC $<TARGET_OBJECTS:unwind>)
 
 # ------------------------------------------------------------------------------
 # Install

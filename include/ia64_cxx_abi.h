@@ -27,6 +27,18 @@
 struct _Unwind_Exception;
 
 // -----------------------------------------------------------------------------
+// Exports
+// -----------------------------------------------------------------------------
+
+#include <bfexports.h>
+
+#ifdef COMPILING_UNWIND
+#define EXPORT_UNWIND EXPORT_SYM
+#else
+#define EXPORT_UNWIND IMPORT_SYM
+#endif
+
+// -----------------------------------------------------------------------------
 // Overview
 // -----------------------------------------------------------------------------
 //
@@ -156,7 +168,7 @@ typedef void (*_Unwind_Exception_Cleanup_Fn)(
 ///     Used by level I as a state save area. This should not be touched by
 ///     level II at all.
 ///
-struct _Unwind_Exception
+struct EXPORT_UNWIND _Unwind_Exception
 {
     uint64_t exception_class;
     _Unwind_Exception_Cleanup_Fn exception_cleanup;
@@ -167,7 +179,7 @@ struct _Unwind_Exception
 /// The Unwind Context, is a pointer that is opaque to layers 1 and 2, and
 /// is used by layer 3 to store the information needed to do stack unwinding.
 ///
-struct _Unwind_Context;
+struct EXPORT_UNWIND _Unwind_Context;
 
 // -----------------------------------------------------------------------------
 // 1.3 Throwing an Exception
@@ -191,10 +203,10 @@ struct _Unwind_Context;
 // cleanup, catch" as they look identical
 //
 
-extern "C" _Unwind_Reason_Code
+extern "C" EXPORT_UNWIND _Unwind_Reason_Code
 _Unwind_RaiseException(_Unwind_Exception *exception_object);
 
-extern "C" void
+extern "C" EXPORT_UNWIND void
 _Unwind_Resume(_Unwind_Exception *exception_object);
 
 // -----------------------------------------------------------------------------
@@ -206,7 +218,7 @@ _Unwind_Resume(_Unwind_Exception *exception_object);
 // function, which is located in the exception object itself.
 //
 
-extern "C" void
+extern "C" EXPORT_UNWIND void
 _Unwind_DeleteException(_Unwind_Exception *exception_object);
 
 // -----------------------------------------------------------------------------
@@ -223,22 +235,22 @@ _Unwind_DeleteException(_Unwind_Exception *exception_object);
 // 2 also need to know where the start of the FDE is (i.e. pc_begin)
 //
 
-extern "C" uintptr_t
+extern "C" EXPORT_UNWIND uintptr_t
 _Unwind_GetGR(_Unwind_Context *context, int index);
 
-extern "C" void
+extern "C" EXPORT_UNWIND void
 _Unwind_SetGR(_Unwind_Context *context, int index, uintptr_t value);
 
-extern "C" uintptr_t
+extern "C" EXPORT_UNWIND uintptr_t
 _Unwind_GetIP(_Unwind_Context *context);
 
-extern "C" void
+extern "C" EXPORT_UNWIND void
 _Unwind_SetIP(_Unwind_Context *context, uintptr_t value);
 
-extern "C" uintptr_t
+extern "C" EXPORT_UNWIND uintptr_t
 _Unwind_GetLanguageSpecificData(_Unwind_Context *context);
 
-extern "C" uintptr_t
+extern "C" EXPORT_UNWIND uintptr_t
 _Unwind_GetRegionStart(_Unwind_Context *context);
 
 // -----------------------------------------------------------------------------
@@ -258,15 +270,16 @@ _Unwind_GetRegionStart(_Unwind_Context *context);
 //
 
 typedef int _Unwind_Action;
-static const _Unwind_Action _UA_SEARCH_PHASE = 1;
-static const _Unwind_Action _UA_CLEANUP_PHASE = 2;
-static const _Unwind_Action _UA_HANDLER_FRAME = 4;
-static const _Unwind_Action _UA_FORCE_UNWIND = 8;
+constexpr const _Unwind_Action _UA_SEARCH_PHASE = 1;
+constexpr const _Unwind_Action _UA_CLEANUP_PHASE = 2;
+constexpr const _Unwind_Action _UA_HANDLER_FRAME = 4;
+constexpr const _Unwind_Action _UA_FORCE_UNWIND = 8;
 
-typedef _Unwind_Reason_Code(*__personality_routine)(int version,
-        _Unwind_Action actions, uint64_t exceptionClass,
-        _Unwind_Exception *exceptionObject,
-        _Unwind_Context *context);
+typedef _Unwind_Reason_Code(
+    *__personality_routine)(int version,
+    _Unwind_Action actions, uint64_t exceptionClass,
+    _Unwind_Exception *exceptionObject,
+    _Unwind_Context *context);
 
 // -----------------------------------------------------------------------------
 // GNU Extensions
@@ -276,7 +289,7 @@ typedef _Unwind_Reason_Code(*__personality_routine)(int version,
 // as LLVM doesn't add any additional functionality.
 //
 
-extern "C" uintptr_t
+extern "C" EXPORT_UNWIND uintptr_t
 _Unwind_GetIPInfo(_Unwind_Context *context, int *ip_before_insn);
 
 #endif
