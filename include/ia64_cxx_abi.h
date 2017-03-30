@@ -27,18 +27,6 @@
 struct _Unwind_Exception;
 
 // -----------------------------------------------------------------------------
-// Exports
-// -----------------------------------------------------------------------------
-
-#include <bfexports.h>
-
-#ifdef COMPILING_UNWIND
-#define EXPORT_UNWIND EXPORT_SYM
-#else
-#define EXPORT_UNWIND IMPORT_SYM
-#endif
-
-// -----------------------------------------------------------------------------
 // Overview
 // -----------------------------------------------------------------------------
 //
@@ -168,7 +156,7 @@ typedef void (*_Unwind_Exception_Cleanup_Fn)(
 ///     Used by level I as a state save area. This should not be touched by
 ///     level II at all.
 ///
-struct EXPORT_UNWIND _Unwind_Exception
+struct _Unwind_Exception
 {
     uint64_t exception_class;
     _Unwind_Exception_Cleanup_Fn exception_cleanup;
@@ -179,7 +167,7 @@ struct EXPORT_UNWIND _Unwind_Exception
 /// The Unwind Context, is a pointer that is opaque to layers 1 and 2, and
 /// is used by layer 3 to store the information needed to do stack unwinding.
 ///
-struct EXPORT_UNWIND _Unwind_Context;
+struct _Unwind_Context;
 
 // -----------------------------------------------------------------------------
 // 1.3 Throwing an Exception
@@ -203,10 +191,10 @@ struct EXPORT_UNWIND _Unwind_Context;
 // cleanup, catch" as they look identical
 //
 
-extern "C" EXPORT_UNWIND _Unwind_Reason_Code
+extern "C" _Unwind_Reason_Code
 _Unwind_RaiseException(_Unwind_Exception *exception_object);
 
-extern "C" EXPORT_UNWIND void
+extern "C" void
 _Unwind_Resume(_Unwind_Exception *exception_object);
 
 // -----------------------------------------------------------------------------
@@ -218,7 +206,7 @@ _Unwind_Resume(_Unwind_Exception *exception_object);
 // function, which is located in the exception object itself.
 //
 
-extern "C" EXPORT_UNWIND void
+extern "C" void
 _Unwind_DeleteException(_Unwind_Exception *exception_object);
 
 // -----------------------------------------------------------------------------
@@ -235,22 +223,22 @@ _Unwind_DeleteException(_Unwind_Exception *exception_object);
 // 2 also need to know where the start of the FDE is (i.e. pc_begin)
 //
 
-extern "C" EXPORT_UNWIND uintptr_t
+extern "C" uintptr_t
 _Unwind_GetGR(_Unwind_Context *context, int index);
 
-extern "C" EXPORT_UNWIND void
+extern "C" void
 _Unwind_SetGR(_Unwind_Context *context, int index, uintptr_t value);
 
-extern "C" EXPORT_UNWIND uintptr_t
+extern "C" uintptr_t
 _Unwind_GetIP(_Unwind_Context *context);
 
-extern "C" EXPORT_UNWIND void
+extern "C" void
 _Unwind_SetIP(_Unwind_Context *context, uintptr_t value);
 
-extern "C" EXPORT_UNWIND uintptr_t
+extern "C" uintptr_t
 _Unwind_GetLanguageSpecificData(_Unwind_Context *context);
 
-extern "C" EXPORT_UNWIND uintptr_t
+extern "C" uintptr_t
 _Unwind_GetRegionStart(_Unwind_Context *context);
 
 // -----------------------------------------------------------------------------
@@ -289,7 +277,7 @@ typedef _Unwind_Reason_Code(
 // as LLVM doesn't add any additional functionality.
 //
 
-extern "C" EXPORT_UNWIND uintptr_t
+extern "C" uintptr_t
 _Unwind_GetIPInfo(_Unwind_Context *context, int *ip_before_insn);
 
 #endif
