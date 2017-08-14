@@ -84,8 +84,7 @@ struct _Unwind_Exception;
 /// callback functions what to do, so view it as nothing more than a global
 /// enum, were each value has it's own meaning.
 ///
-typedef enum
-{
+typedef enum {
     _URC_NO_REASON = 0,
     _URC_FOREIGN_EXCEPTION_CAUGHT = 1,
     _URC_FATAL_PHASE2_ERROR = 2,
@@ -156,8 +155,7 @@ typedef void (*_Unwind_Exception_Cleanup_Fn)(
 ///     Used by level I as a state save area. This should not be touched by
 ///     level II at all.
 ///
-struct _Unwind_Exception
-{
+struct _Unwind_Exception {
     uint64_t exception_class;
     _Unwind_Exception_Cleanup_Fn exception_cleanup;
     uint64_t private_1;
@@ -265,9 +263,9 @@ constexpr const _Unwind_Action _UA_FORCE_UNWIND = 8;
 
 typedef _Unwind_Reason_Code(
     *__personality_routine)(int version,
-    _Unwind_Action actions, uint64_t exceptionClass,
-    _Unwind_Exception *exceptionObject,
-    _Unwind_Context *context);
+                            _Unwind_Action actions, uint64_t exceptionClass,
+                            _Unwind_Exception *exceptionObject,
+                            _Unwind_Context *context);
 
 // -----------------------------------------------------------------------------
 // GNU Extensions

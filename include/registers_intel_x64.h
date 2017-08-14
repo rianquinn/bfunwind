@@ -34,8 +34,7 @@
 // Load / Store Registers
 // -----------------------------------------------------------------------------
 
-struct registers_intel_x64_t
-{
+struct registers_intel_x64_t {
     uint64_t rax;
     uint64_t rdx;
     uint64_t rcx;
@@ -115,16 +114,18 @@ public:
 
     uint64_t get(uint64_t index) const override
     {
-        if (index >= max_num_registers())
+        if (index >= max_num_registers()) {
             ABORT("register index out of bounds");
+        }
 
         return reinterpret_cast<const uint64_t *>(&m_registers)[index];
     }
 
     register_state &set(uint64_t index, uint64_t value) override
     {
-        if (index >= max_num_registers())
+        if (index >= max_num_registers()) {
             ABORT("register index out of bounds");
+        }
 
         reinterpret_cast<uint64_t *>(&m_tmp_registers)[index] = value;
 
@@ -148,11 +149,11 @@ public:
 
     const char *name(uint64_t index) const override
     {
-        if (index >= max_num_registers())
+        if (index >= max_num_registers()) {
             ABORT("register index out of bounds");
+        }
 
-        switch (index)
-        {
+        switch (index) {
             case 0x00: return "rax";
             case 0x01: return "rdx";
             case 0x02: return "rcx";
