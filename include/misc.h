@@ -33,11 +33,13 @@ add_offset(uint64_t value, int64_t offset)
 {
     auto abs_offset = bfabs(offset);
 
-    if (offset >= 0)
+    if (offset >= 0) {
         return value + abs_offset;
+    }
 
-    if (value >= abs_offset)
+    if (value >= abs_offset) {
         return value - abs_offset;
+    }
 
     ABORT("attempted add an offset that would result in overflow");
     return 0;

@@ -31,8 +31,7 @@
 // Context
 // -----------------------------------------------------------------------------
 
-struct _Unwind_Context
-{
+struct _Unwind_Context {
     fd_entry fde;
     register_state *state;
     _Unwind_Exception *exception_object;
@@ -51,10 +50,8 @@ struct _Unwind_Context
 static _Unwind_Reason_Code
 private_personality(_Unwind_Action action, _Unwind_Context *context)
 {
-    if (auto pl = context->fde.cie().personality_function())
-    {
-        if (auto pr = *(reinterpret_cast<__personality_routine *>(pl)))
-        {
+    if (auto pl = context->fde.cie().personality_function()) {
+        if (auto pr = *(reinterpret_cast<__personality_routine *>(pl))) {
             return pr(1, action,
                       context->exception_object->exception_class,
                       context->exception_object, context);
@@ -71,8 +68,9 @@ private_personality(_Unwind_Action action, _Unwind_Context *context)
 static _Unwind_Reason_Code
 find_and_store_fde(_Unwind_Context *context)
 {
-    if (!(context->fde = eh_frame::find_fde(context->state)))
+    if (!(context->fde = eh_frame::find_fde(context->state))) {
         return _URC_END_OF_STACK;
+    }
 
     return _URC_CONTINUE_UNWIND;
 }
@@ -83,19 +81,19 @@ private_phase1(_Unwind_Context *context)
     auto result = _URC_CONTINUE_UNWIND;
 
     result = find_and_store_fde(context);
-    if (result != _URC_CONTINUE_UNWIND)
+    if (result != _URC_CONTINUE_UNWIND) {
         return result;
+    }
 
     dwarf4::unwind(context->fde, context->state);
 
-    while (true)
-    {
+    while (true) {
         result = find_and_store_fde(context);
-        if (result != _URC_CONTINUE_UNWIND)
+        if (result != _URC_CONTINUE_UNWIND) {
             return result;
+        }
 
-        switch (private_personality(_UA_SEARCH_PHASE, context))
-        {
+        switch (private_personality(_UA_SEARCH_PHASE, context)) {
             case _URC_HANDLER_FOUND:
                 context->exception_object->private_1 = context->fde.pc_begin();
                 return _URC_NO_REASON;
@@ -117,24 +115,25 @@ private_phase2(_Unwind_Context *context)
     auto result = _URC_CONTINUE_UNWIND;
 
     result = find_and_store_fde(context);
-    if (result != _URC_CONTINUE_UNWIND)
+    if (result != _URC_CONTINUE_UNWIND) {
         return result;
+    }
 
     dwarf4::unwind(context->fde, context->state);
 
-    while (true)
-    {
+    while (true) {
         auto action = _UA_CLEANUP_PHASE;
 
         result = find_and_store_fde(context);
-        if (result != _URC_CONTINUE_UNWIND)
+        if (result != _URC_CONTINUE_UNWIND) {
             return result;
+        }
 
-        if (context->exception_object->private_1 == context->fde.pc_begin())
+        if (context->exception_object->private_1 == context->fde.pc_begin()) {
             action |= _UA_HANDLER_FRAME;
+        }
 
-        switch (private_personality(action, context))
-        {
+        switch (private_personality(action, context)) {
             case _URC_INSTALL_CONTEXT:
                 context->state->resume(); __builtin_unreachable();
 
@@ -164,15 +163,17 @@ _Unwind_RaiseException(_Unwind_Exception *exception_object)
     auto context = _Unwind_Context(&state, exception_object);
 
     ret = private_phase1(&context);
-    if (ret != _URC_NO_REASON)
+    if (ret != _URC_NO_REASON) {
         return ret;
+    }
 
     state = register_state_intel_x64(registers);
     context = _Unwind_Context(&state, exception_object);
 
     ret = private_phase2(&context);
-    if (ret != _URC_NO_REASON)
+    if (ret != _URC_NO_REASON) {
         return ret;
+    }
 
     return _URC_FATAL_PHASE2_ERROR;
 }
@@ -238,8 +239,9 @@ _Unwind_GetRegionStart(_Unwind_Context *context)
 extern "C" EXPORT_SYM uintptr_t
 _Unwind_GetIPInfo(_Unwind_Context *context, int *ip_before_insn)
 {
-    if (ip_before_insn == nullptr)
+    if (ip_before_insn == nullptr) {
         ABORT("ip_before_insn == 0");
+    }
 
     *ip_before_insn = 0;
     return _Unwind_GetIP(context);

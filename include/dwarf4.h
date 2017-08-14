@@ -140,8 +140,7 @@
 // Call Frame Information (section 6.4.1)
 // -----------------------------------------------------------------------------
 
-enum register_rules
-{
+enum register_rules {
     rule_undefined       = 0,
     rule_same_value      = 1,
     rule_offsetn         = 2,
